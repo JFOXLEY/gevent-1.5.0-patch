@@ -1,0 +1,31 @@
+--- gevent-1.5.0/src/gevent/_socket3.py 2020-04-10 15:48:54.000000000 +0000
++++ _socket3.py 2024-07-30 09:26:15.698884795 +0000
+@@ -253,14 +253,26 @@
+             sock.setblocking(True)
+         return sock, addr
+
+-    def makefile(self, mode="r", buffering=None, *,
+-                 encoding=None, errors=None, newline=None):
++    def makefile(self, *args, **kwargs):
+         """Return an I/O stream connected to the socket
+
+         The arguments are as for io.open() after the filename,
+         except the only mode characters supported are 'r', 'w' and 'b'.
+         The semantics are similar too.
+         """
++        mode = "r"
++        buffering = None
++        newline = None
++        errors = None
++        encoding = None
++        if len(args) == 1:
++            mode = args[0]
++        if len(args) == 2:
++            buffering = args[1]
++        if "newline" in kwargs: newline = kwargs["newline"]
++        if "errors" in kwargs: errors = kwargs["errors"]
++        if "encoding" in kwargs: encoding = kwargs["encoding"]
++
+         # XXX refactor to share code? We ought to be able to use our FileObject,
+         # adding the appropriate amount of refcounting. At the very least we can use our
+         # OpenDescriptor to handle the parsing.
